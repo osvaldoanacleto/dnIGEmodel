@@ -11,6 +11,8 @@ in groups}
 
 \item{gr.size}{group size}
 
+\item{index}{1 if animal is index case, 0 otherwise}
+
 \item{SigG.g}{= susceptibility genetic variance}
 
 \item{SigG.f}{= infectivity genetic variance}

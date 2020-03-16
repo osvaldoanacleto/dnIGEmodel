@@ -2,9 +2,12 @@
 #' @title Generate population of animals with genetic structure and allocated
 #' in groups
 #'
+#' @import MASS
+#'
 #' @param sires number of sires
 #' @param dpsire number of dam per sires
 #' @param gr.size group size
+#' @param index 1 if animal is index case, 0 otherwise
 #' @param SigG.g = susceptibility genetic variance
 #' @param SigG.f = infectivity genetic variance
 #' @param SigE.g = susceptibility environmental variance
@@ -39,23 +42,23 @@ generate_population <- function(num_replications = 1, sires = 2, dpsire = 5, rho
     # parents
     covG = rhoG * sqrt(SigG.g) * sqrt(SigG.f)
     sigmaG = matrix(c(SigG.g, covG, covG, SigG.f), nc = 2, byrow = T)
-    auxBV.s <- mvrnorm(n = sires, mu = c(0, 0), Sigma = sigmaG)
-    auxBV.d <- mvrnorm(n = N, mu = c(0, 0), Sigma = sigmaG)
+    auxBV_sire <- mvrnorm(n = sires, mu = c(0, 0), Sigma = sigmaG)
+    auxBV_dam <- mvrnorm(n = N, mu = c(0, 0), Sigma = sigmaG)
 
-    BV.s <- data.frame(animal_ID = 1:sires, ng.off = NA, Ag = auxBV.s[, 1], Af = auxBV.s[,
-      2])
-    BV.d <- data.frame(animal_ID = 1:N, sire = sort(rep(1:sires, dpsire)), Ag = auxBV.d[,
-      1], Af = auxBV.d[, 2])
+    BV_sire <- data.frame(sire_ID = 1:sires, ng.off = NA, Ag = auxBV_sire[, 1],
+      Af = auxBV_sire[, 2])
+    BV_dam <- data.frame(dam_ID = 1:N, sire_ID = sort(rep(1:sires, dpsire)),
+      Ag = auxBV_dam[, 1], Af = auxBV_dam[, 2])
 
     # offspring
-    pop <- data.frame(animal_ID = (1:N), sire = sort(rep(1:sires, dpsire)), Ag = rep(NA,
-      N), Af = rep(NA, N))
+    offspring <- data.frame(offspring_ID = (1:N), sire_ID = sort(rep(1:sires,
+      dpsire)), Ag = rep(NA, N), Af = rep(NA, N))
     for (i in 1:sires) {
-      auxBVmend <- mvrnorm(n = dpsire, mu = c(0, 0), Sigma = 0.5 * sigmaG)
-      pop[pop$sire == i, ]$Ag <- 0.5 * BV.s$Ag[i] + 0.5 * BV.d[BV.d$sire ==
-        i, ]$Ag + auxBVmend[, 1]
-      pop[pop$sire == i, ]$Af <- 0.5 * BV.s$Af[i] + 0.5 * BV.d[BV.d$sire ==
-        i, ]$Af + auxBVmend[, 2]
+      mendelian_term <- mvrnorm(n = dpsire, mu = c(0, 0), Sigma = 0.5 * sigmaG)
+      offspring[offspring$sire_ID == i, ]$Ag <- 0.5 * BV_sire$Ag[i] + 0.5 *
+        BV_dam[BV_dam$sire_ID == i, ]$Ag + mendelian_term[, 1]
+      offspring[offspring$sire_ID == i, ]$Af <- 0.5 * BV_sire$Af[i] + 0.5 *
+        BV_dam[BV_dam$sire_ID == i, ]$Af + mendelian_term[, 2]
     }
 
     #------------------------------------------------------#
@@ -64,10 +67,10 @@ generate_population <- function(num_replications = 1, sires = 2, dpsire = 5, rho
     covE = rhoE * sqrt(SigE.g) * sqrt(SigE.f)
     sigmaE = matrix(c(SigE.g, covE, covE, SigE.f), nc = 2, byrow = T)
     Eaux <- mvrnorm(n = N, mu = c(0, 0), Sigma = sigmaE)
-    pop$Eg <- Eaux[, 1]
-    pop$Ef <- Eaux[, 2]
-    pop$g <- pop$Ag + pop$Eg
-    pop$f <- pop$Af + pop$Ef
+    offspring$Eg <- Eaux[, 1]
+    offspring$Ef <- Eaux[, 2]
+    offspring$g <- offspring$Ag + offspring$Eg
+    offspring$f <- offspring$Af + offspring$Ef
 
     #------------------------------------------------------#
     # Assigning index cases and groups #
@@ -76,19 +79,22 @@ generate_population <- function(num_replications = 1, sires = 2, dpsire = 5, rho
     # Random family assignment #
     #------------------------------#
     # index cases
-    pop[, "s"] <- sample(c(rep(0, ngroups), rep(1, N - ngroups)), replace = F)
+    offspring[, "index"] <- sample(c(rep(1, ngroups), rep(0, N - ngroups)), replace = F)
     # groups:
-    pop$group <- NA
-    pop[pop$s == 0, ]$group <- 1:ngroups
-    pop[pop$s == 1, ]$group <- sample(rep(1:ngroups, gr.size - 1), replace = F)
-    # pop[pop$s == 0, 'tau'] <- 0
+    offspring$group <- NA
+    offspring[offspring$index == 1, ]$group <- 1:ngroups
+    offspring[offspring$index == 0, ]$group <- sample(rep(1:ngroups, gr.size -
+      1), replace = F)
+    # offspring[offspring$s == 0, 'tau'] <- 0
 
     # TODO include more than one replication in the same data frame
-    new.order <- c("animal_ID", "sire", "group", "s", "Ag", "Af", "Eg", "Ef")
-    pop <- pop[, new.order]
+    new.order <- c("offspring_ID", "sire_ID", "group", "index", "Ag", "Af", "Eg",
+      "Ef")
+    offspring <- offspring[, new.order]
 
-    for (i in 1:sires) BV.s[i, "ng.off"] <- with(pop[pop$sire == i, ], dim(table(group)))
+    for (i in 1:sires) BV_sire[i, "ng.off"] <- with(offspring[offspring$sire_ID ==
+      i, ], dim(table(group)))
   }
 
-  return(pop)
+  return(list(sire = BV_sire, dam = BV_dam, offspring = offspring))
 }
