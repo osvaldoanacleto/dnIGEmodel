@@ -37,5 +37,11 @@ function(num_replications = 1, sires = 2, dpsire = 5,
          rhoG = -0.4, rhoE = -0.4, SigG.g = 4, SigG.f = 4, SigE.g = 1,
          SigE.f = 1,
          group_size = 5, seed = 242)
+grp_size = 10
+example <- generate_population(group_size = grp_size, sires = 25, dpsire = 2,
+            rhoG = -0.4, rhoE = -0.4, SigG.g = 4, SigG.f = 4, SigE.g = 1,
+             SigE.f = 1,)
+example
+
 
 }
