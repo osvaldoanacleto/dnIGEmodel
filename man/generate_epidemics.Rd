@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate_epidemics.R
 \name{generate_epidemics}
 \alias{generate_epidemics}
-\title{Generate epidemics using the Gillespie algorithm in animals}
+\title{Generate epidemics using the Gillespie algorithm}
 \arguments{
 \item{offspring_data}{dataframe created by generate_population function}
 
@@ -14,11 +14,15 @@ return offspring_data dataframe with column containing time of
 infection
 }
 \description{
-Generate epidemics using the Gillespie algorithm in animals
+Generate epidemics using the Gillespie algorithm
 
-with genetic structure and allocated in groups
+assumptions:
 
-assumes SI model and that all individuals are infected during the epidemic
+* animals with genetic structure and allocated in groups
+
+* SI model
+
+* all individuals are infected during the epidemic (prevalence = 1)
 }
 \examples{
 grp_size = 10

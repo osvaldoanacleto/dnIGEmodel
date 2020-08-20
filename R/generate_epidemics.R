@@ -1,7 +1,9 @@
 #' @name generate_epidemics
-#' @title Generate epidemics using the Gillespie algorithm in animals
-#' @title with genetic structure and allocated in groups
-#' @title assumes SI model and that all individuals are infected during the epidemic
+#' @title Generate epidemics using the Gillespie algorithm
+#' @title assumptions:
+#' @title * animals with genetic structure and allocated in groups
+#' @title * SI model
+#' @title * all individuals are infected during the epidemic (prevalence = 1)
 #'
 #' @import MASS
 #'
