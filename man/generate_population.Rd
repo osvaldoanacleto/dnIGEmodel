@@ -9,7 +9,7 @@ in groups}
 
 \item{dpsire}{number of dam per sires}
 
-\item{gr.size}{group size}
+\item{group_size}{group size}
 
 \item{index}{1 if animal is index case, 0 otherwise}
 
@@ -36,6 +36,6 @@ in groups
 function(num_replications = 1, sires = 2, dpsire = 5,
          rhoG = -0.4, rhoE = -0.4, SigG.g = 4, SigG.f = 4, SigE.g = 1,
          SigE.f = 1,
-         gr.size = 5, seed = 242)
+         group_size = 5, seed = 242)
 
 }

@@ -6,7 +6,7 @@
 #'
 #' @param sires number of sires
 #' @param dpsire number of dam per sires
-#' @param gr.size group size
+#' @param group_size group size
 #' @param index 1 if animal is index case, 0 otherwise
 #' @param SigG.g = susceptibility genetic variance
 #' @param SigG.f = infectivity genetic variance
@@ -21,23 +21,23 @@
 #' function(num_replications = 1, sires = 2, dpsire = 5,
 #'          rhoG = -0.4, rhoE = -0.4, SigG.g = 4, SigG.f = 4, SigE.g = 1,
 #'          SigE.f = 1,
-#'          gr.size = 5, seed = 242)
+#'          group_size = 5, seed = 242)
 #'
 #' @export
 library(MASS)
 
 
-generate_population <- function(num_replications = 1, sires = 2, dpsire = 5, rhoG = -0.4,
-  rhoE = -0.4, SigG.g = 4, SigG.f = 4, SigE.g = 1, SigE.f = 1, gr.size = 5, seed = 242) {
+generate_population <- function(num_replications = 1, sires = 2, dpsire = 2, rhoG = 0,
+  rhoE = 0, SigG.g = 4, SigG.f = 4, SigE.g = 1, SigE.f = 1, group_size = 2, seed = 242) {
 
   N <- sires * dpsire
-  ngroups = N/gr.size
+  ngroups = N/group_size
   set.seed(seed)
 
   for (jj in 1:num_replications) {
 
     #----------------------------------------#
-    # generating BVs #
+    # definindo os valores genéticos #
     #----------------------------------------#
     # parents
     covG = rhoG * sqrt(SigG.g) * sqrt(SigG.f)
@@ -50,8 +50,8 @@ generate_population <- function(num_replications = 1, sires = 2, dpsire = 5, rho
     BV_dam <- data.frame(dam_ID = 1:N, sire_ID = sort(rep(1:sires, dpsire)),
       Ag = auxBV_dam[, 1], Af = auxBV_dam[, 2])
 
-    # offspring
-    offspring <- data.frame(offspring_ID = (1:N), sire_ID = sort(rep(1:sires,
+  #   # offspring
+    offspring <- data.frame(ID= (1:N), sire_ID = sort(rep(1:sires,
       dpsire)), Ag = rep(NA, N), Af = rep(NA, N))
     for (i in 1:sires) {
       mendelian_term <- mvrnorm(n = dpsire, mu = c(0, 0), Sigma = 0.5 * sigmaG)
@@ -66,9 +66,9 @@ generate_population <- function(num_replications = 1, sires = 2, dpsire = 5, rho
     #------------------------------------------------------#
     covE = rhoE * sqrt(SigE.g) * sqrt(SigE.f)
     sigmaE = matrix(c(SigE.g, covE, covE, SigE.f), nc = 2, byrow = T)
-    Eaux <- mvrnorm(n = N, mu = c(0, 0), Sigma = sigmaE)
-    offspring$Eg <- Eaux[, 1]
-    offspring$Ef <- Eaux[, 2]
+    environ_effects <- mvrnorm(n = N, mu = c(0, 0), Sigma = sigmaE)
+    offspring$Eg <- environ_effects[, 1]
+    offspring$Ef <- environ_effects[, 2]
     offspring$g <- offspring$Ag + offspring$Eg
     offspring$f <- offspring$Af + offspring$Ef
 
@@ -79,22 +79,34 @@ generate_population <- function(num_replications = 1, sires = 2, dpsire = 5, rho
     # Random family assignment #
     #------------------------------#
     # index cases
-    offspring[, "index"] <- sample(c(rep(1, ngroups), rep(0, N - ngroups)), replace = F)
+    offspring[, "index"] <- sample(c(rep(0,ngroups),rep(1,N-ngroups)),replace=F)
     # groups:
     offspring$group <- NA
-    offspring[offspring$index == 1, ]$group <- 1:ngroups
-    offspring[offspring$index == 0, ]$group <- sample(rep(1:ngroups, gr.size -
+    offspring[offspring$index == 0, ]$group <- 1:ngroups
+    offspring[offspring$index == 1, ]$group <- sample(rep(1:ngroups, group_size -
       1), replace = F)
-    # offspring[offspring$s == 0, 'tau'] <- 0
+    #offspring[offspring$index == 0, 'tau'] <- 0
 
-    # TODO include more than one replication in the same data frame
-    new.order <- c("offspring_ID", "sire_ID", "group", "index", "Ag", "Af", "Eg",
+  #   # TODO include more than one replication in the same data frame
+    new.order <- c("ID", "sire_ID", "group", "index", "Ag", "Af", "Eg",
       "Ef")
     offspring <- offspring[, new.order]
 
     for (i in 1:sires) BV_sire[i, "ng.off"] <- with(offspring[offspring$sire_ID ==
       i, ], dim(table(group)))
-  }
+    }
 
-  return(list(sire = BV_sire, dam = BV_dam, offspring = offspring))
+    # relationship matrix (A)
+    relationship_matrix_aux <-list()
+    relationship_matrix_aux[[1]] <- diag(sires)
+    for (i in 2:(sires+1)){
+      relationship_matrix_aux[[i]] <- matrix(0.25, dpsire, dpsire)
+      diag(relationship_matrix_aux[[i]]) <- 1
+    }
+    relationship_matrix <- bdiag(relationship_matrix_aux)
+
+
+
+  return(list(sire = BV_sire, dam = BV_dam, offspring = offspring,
+              relationship_matrix = as.matrix(relationship_matrix)))
 }
