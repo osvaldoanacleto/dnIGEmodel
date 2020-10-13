@@ -21,14 +21,14 @@
 #' grp_size = 10
 #' example <- generate_population(group_size = grp_size, sires = 25, dpsire = 2,
 #'             rhoG = -0.4, rhoE = -0.4, SigG.g = 4, SigG.f = 4, SigE.g = 1,
-#'              SigE.f = 1,)
+#'              SigE.f = 1)
 #' example
 #'
 #'
 #' @export
 library(MASS)
 
-
+# assumes same relationship matrix for all replicates!
 generate_population <- function(num_replications = 1, sires = 2, dpsire = 2, rhoG = 0,
   rhoE = 0, SigG.g = 4, SigG.f = 4, SigE.g = 1, SigE.f = 1, group_size = 2, seed = 242) {
 
@@ -36,7 +36,18 @@ generate_population <- function(num_replications = 1, sires = 2, dpsire = 2, rho
   ngroups = N/group_size
   set.seed(seed)
 
-  for (jj in 1:num_replications) {
+  BV_sire_all_replicates <- data.frame(replicate = numeric(), sire_ID = numeric(), ng.off = numeric(),
+                         Ag = numeric(), Af = numeric(), stringsAsFactors = FALSE)
+
+  BV_dam_all_replicates <- data.frame(replicate = numeric(), dam_ID = numeric(), sire_ID = numeric(),
+                         Ag = numeric(), Af = numeric(), stringsAsFactors = FALSE)
+
+  offspring_all_replicates <- data.frame(replicate = numeric(), ID = numeric(), sire_ID = numeric(),
+                              group = numeric(), index = numeric(), Ag = numeric(),
+                              Af = numeric(), Eg = numeric(), Ef = numeric(),
+                              stringsAsFactors = FALSE)
+
+  for (replic in 1:num_replications) {
 
     #----------------------------------------#
     # definindo os valores genéticos #
@@ -47,13 +58,13 @@ generate_population <- function(num_replications = 1, sires = 2, dpsire = 2, rho
     auxBV_sire <- mvrnorm(n = sires, mu = c(0, 0), Sigma = sigmaG)
     auxBV_dam <- mvrnorm(n = N, mu = c(0, 0), Sigma = sigmaG)
 
-    BV_sire <- data.frame(sire_ID = 1:sires, ng.off = NA, Ag = auxBV_sire[, 1],
+    BV_sire <- data.frame(replicate = replic, sire_ID = 1:sires, ng.off = NA, Ag = auxBV_sire[, 1],
       Af = auxBV_sire[, 2])
-    BV_dam <- data.frame(dam_ID = 1:N, sire_ID = sort(rep(1:sires, dpsire)),
+    BV_dam <- data.frame(replicate = replic, dam_ID = 1:N, sire_ID = sort(rep(1:sires, dpsire)),
       Ag = auxBV_dam[, 1], Af = auxBV_dam[, 2])
 
   #   # offspring
-    offspring <- data.frame(ID= (1:N), sire_ID = sort(rep(1:sires,
+    offspring <- data.frame(replicate = replic, ID = (1:N), sire_ID = sort(rep(1:sires,
       dpsire)), Ag = rep(NA, N), Af = rep(NA, N))
     for (i in 1:sires) {
       mendelian_term <- mvrnorm(n = dpsire, mu = c(0, 0), Sigma = 0.5 * sigmaG)
@@ -90,12 +101,17 @@ generate_population <- function(num_replications = 1, sires = 2, dpsire = 2, rho
     #offspring[offspring$index == 0, 'tau'] <- 0
 
   #   # TODO include more than one replication in the same data frame
-    new.order <- c("ID", "sire_ID", "group", "index", "Ag", "Af", "Eg",
+    new.order <- c("replicate","ID", "sire_ID", "group", "index", "Ag", "Af", "Eg",
       "Ef")
     offspring <- offspring[, new.order]
 
     for (i in 1:sires) BV_sire[i, "ng.off"] <- with(offspring[offspring$sire_ID ==
       i, ], dim(table(group)))
+
+
+    BV_sire_all_replicates  <- rbind(BV_sire_all_replicates, BV_sire)
+    BV_dam_all_replicates  <- rbind(BV_dam_all_replicates, BV_dam)
+    offspring_all_replicates <- rbind(offspring_all_replicates, offspring)
     }
 
     # relationship matrix (A)
@@ -109,6 +125,8 @@ generate_population <- function(num_replications = 1, sires = 2, dpsire = 2, rho
 
 
 
-  return(list(sire = BV_sire, dam = BV_dam, offspring = offspring,
+  return(list(sire = BV_sire_all_replicates,
+              dam = BV_dam_all_replicates,
+              offspring = offspring_all_replicates,
               relationship_matrix = as.matrix(relationship_matrix)))
 }
