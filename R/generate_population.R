@@ -122,7 +122,7 @@ generate_population <- function(num_replications = 1, sires = 2, dpsire = 2, rho
       relationship_matrix_aux[[i]] <- matrix(0.25, dpsire, dpsire)
       diag(relationship_matrix_aux[[i]]) <- 1
     }
-    relationship_matrix <- bdiag(relationship_matrix_aux)
+    relationship_matrix <- dlm::bdiag(relationship_matrix_aux)
 
 
 

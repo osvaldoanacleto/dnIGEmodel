@@ -5,6 +5,8 @@
 \title{Generate population of animals with genetic structure and allocated
 in groups}
 \arguments{
+\item{num_replications}{number of replications}
+
 \item{sires}{number of sires}
 
 \item{dpsire}{number of dam per sires}
@@ -34,9 +36,9 @@ in groups
 }
 \examples{
 grp_size = 10
-example <- generate_population(group_size = grp_size, sires = 25, dpsire = 2,
+example <- generate_population(num_replications = 10, group_size = grp_size, sires = 25, dpsire = 2,
             rhoG = -0.4, rhoE = -0.4, SigG.g = 4, SigG.f = 4, SigE.g = 1,
-             SigE.f = 1,)
+             SigE.f = 1)
 example
 
 
