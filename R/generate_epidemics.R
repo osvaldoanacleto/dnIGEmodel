@@ -14,21 +14,22 @@
 #' @return infection
 #'
 #' @examples
-#'grp_size = 10
-#'df <- generate_population(group_size = grp_size, sires = 25, dpsire = 2)$offspring
-#'df_epi <- generate_epidemics(df, group_size = grp_size)
-#'
+#' grp_size <- 10
+#' df <- generate_population(group_size = grp_size, sires = 25, dpsire = 2)$offspring
+#' df_epi <- generate_epidemics(df, group_size = grp_size)
 #' @export
 library(MASS)
 
 generate_epidemics <- function(offspring_data_replicates, group_size, seed = 242) {
   set.seed(seed)
 
-  offspring_epidemic_data_replicates <- data.frame(replicate = numeric(), ID = numeric(),
+  offspring_epidemic_data_replicates <- data.frame(
+    replicate = numeric(), ID = numeric(),
     sire_ID = numeric(), group = numeric(), index = numeric(), Ag = numeric(),
     Af = numeric(), Eg = numeric(), Ef = numeric(), infection_time = numeric(),
-    stringsAsFactors = FALSE)
-    
+    stringsAsFactors = FALSE
+  )
+  print(head(offspring_data_replicates))
   for (replic in 1:max(offspring_data_replicates$replicate)) {
     offspring_data <- offspring_data_replicates[offspring_data_replicates$replicate ==
       replic, ]
@@ -47,17 +48,17 @@ generate_epidemics <- function(offspring_data_replicates, group_size, seed = 242
     for (i in 1:number_of_groups) {
       next_infection_time <- 0
       data_group_i <- offspring_data[offspring_data$group == i, ]
-      while (sum(data_group_i$is_infected)/group_size < 1) {
+      while (sum(data_group_i$is_infected) / group_size < 1) {
         for (j in 1:group_size) {
-          lambda[[i]][j] = 0
+          lambda[[i]][j] <- 0
           if (data_group_i$is_infected[j] == 0) {
-          lambda[[i]][j] = exp(data_group_i$Ag[j] + data_group_i$Eg[j]) *
-            sum(exp(data_group_i[data_group_i$is_infected == 1, ]$Af +
-            data_group_i[data_group_i$is_infected == 1, ]$Ef))
+            lambda[[i]][j] <- exp(data_group_i$Ag[j] + data_group_i$Eg[j]) *
+              sum(exp(data_group_i[data_group_i$is_infected == 1, ]$Af +
+                data_group_i[data_group_i$is_infected == 1, ]$Ef))
           }
         }
         next_infection_time <- next_infection_time + rexp(1, rate = sum(lambda[[i]]))
-        ID_next_inf <- sample(data_group_i$ID, size = 1, prob = lambda[[i]]/sum(lambda[[i]]))
+        ID_next_inf <- sample(data_group_i$ID, size = 1, prob = lambda[[i]] / sum(lambda[[i]]))
         data_group_i[data_group_i$ID == ID_next_inf, "is_infected"] <- 1
         data_group_i[data_group_i$ID == ID_next_inf, "infection_time"] <- next_infection_time
       }
@@ -65,12 +66,17 @@ generate_epidemics <- function(offspring_data_replicates, group_size, seed = 242
       # 'is_last_infection'] <- 1
       offspring_data[offspring_data$group == i, ] <- data_group_i
     }
-    offspring_epidemic_data_replicates <- rbind(offspring_epidemic_data_replicates,
-      offspring_data)
-
+    offspring_epidemic_data_replicates <- rbind(
+      offspring_epidemic_data_replicates,
+      offspring_data
+    )
   }
 
-  return(offspring_epidemic_data_replicates[order(offspring_epidemic_data_replicates$replicate,
-    offspring_epidemic_data_replicates$group, offspring_epidemic_data_replicates$infection_time),
-    !(names(offspring_epidemic_data_replicates) %in% "is_infected")])
+  return(offspring_epidemic_data_replicates[
+    order(
+      offspring_epidemic_data_replicates$replicate,
+      offspring_epidemic_data_replicates$group, offspring_epidemic_data_replicates$infection_time
+    ),
+    !(names(offspring_epidemic_data_replicates) %in% "is_infected")
+  ])
 }

@@ -1,6 +1,6 @@
 #' @name generate_population
 #' @title Generate population of animals with genetic structure and allocated
-#' in groups
+#' in groups (MUST REWRITE)
 #'
 #' @import MASS
 #'
