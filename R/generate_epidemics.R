@@ -19,7 +19,6 @@
 #'df_epi <- generate_epidemics(df, group_size = grp_size)
 #'
 #' @export
-#' milena lima
 library(MASS)
 
 generate_epidemics <- function(offspring_data_replicates, group_size, seed = 242) {
