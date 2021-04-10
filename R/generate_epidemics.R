@@ -20,7 +20,7 @@
 #' @export
 library(MASS)
 
-generate_epidemics <- function(offspring_data_replicates, group_size, seed = 242) {
+generate_epidemics <- function(offspring_data_replicates, group_size, seed = 1754) {
   set.seed(seed)
 
   offspring_epidemic_data_replicates <- data.frame(
@@ -39,7 +39,7 @@ generate_epidemics <- function(offspring_data_replicates, group_size, seed = 242
     # offspring_data[offspring_data$index == 1, 'infection_time'] <- -1
     offspring_data[, "infection_time"] <- NA
     offspring_data[offspring_data$index == 0, "infection_time"] <- 0
-    # offspring_data$is_last_infection <- 0
+    offspring_data$is_last_infection <- 0
 
     lambda <- list()
     for (k in 1:number_of_groups) lambda[[k]] <- rep(NA, nr = group_size)
@@ -62,8 +62,8 @@ generate_epidemics <- function(offspring_data_replicates, group_size, seed = 242
         data_group_i[data_group_i$ID == ID_next_inf, "is_infected"] <- 1
         data_group_i[data_group_i$ID == ID_next_inf, "infection_time"] <- next_infection_time
       }
-      # data_group_i[data_group_i$infection_time == max(data_group_i$infection_time),
-      # 'is_last_infection'] <- 1
+      data_group_i[data_group_i$infection_time == max(data_group_i$infection_time),
+      'is_last_infection'] <- 1
       offspring_data[offspring_data$group == i, ] <- data_group_i
     }
     offspring_epidemic_data_replicates <- rbind(
