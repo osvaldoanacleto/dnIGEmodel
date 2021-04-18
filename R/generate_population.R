@@ -104,7 +104,7 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
     # Gerando os Grupos Aleatoriamente #
     #----------------------------------#
     
-    for (block in 1:20) {
+    for (block in 1:n.blocks) {
       
       # Identificando a amplitude dos pais
       p1 <- 5*(block-1) +1 
