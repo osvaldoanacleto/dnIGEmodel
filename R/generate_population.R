@@ -99,6 +99,7 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
     #------------------------------#
     # Random family assignment #
     #------------------------------#
+    offspring$groups <- rep(NA, N)
     #------------------------------------#
     # Formando os blocos                #
     # Gerando os Grupos Aleatoriamente #
@@ -129,7 +130,7 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
     
     
     # index cases
-    #offspring[, "index"] <- sample(c(rep(0,ngroups),rep(1,N-ngroups)),replace=F)
+    offspring[, "index"] <- sample(c(rep(0,ngroups),rep(1,N-ngroups)),replace=F)
     # groups:
     #offspring$group <- NA
     #offspring[offspring$index == 0, ]$group <- 1:ngroups
