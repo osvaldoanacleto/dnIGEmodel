@@ -1,5 +1,3 @@
-install.packages("githubinstall")
-
 library(devtools)
 install_github("osvaldoanacleto/dnIGEmodel", ref = "experimental_design")
 library(dnIGEmodel)
