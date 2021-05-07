@@ -258,4 +258,4 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
               relationship_matrix = as.matrix(relationship_matrix))) #,data_set_familia = familia))
 }
 
-
+generate_population()
