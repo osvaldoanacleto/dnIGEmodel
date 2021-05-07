@@ -254,16 +254,4 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
               relationship_matrix = as.matrix(relationship_matrix))) #,data_set_familia = familia))
 }
 
-result_random <- generate_population(allocation_type = "random")
-result_2FAM <- generate_population(allocation_type = "2FAM")
-
-
-#levels(as.factor(result_random$offspring$replicate))
-
-
-head(result_2FAM$offspring)
-
-head(result_random$offspring)
-
-generate_population()
 
