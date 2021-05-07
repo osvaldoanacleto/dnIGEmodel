@@ -36,9 +36,8 @@ library(MASS)
 # Com alterações:
 generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, rhoG = 0,
                                 rhoE = 0, SigG.g = 4, SigG.f = 4, SigE.g = 1, SigE.f = 1, group_size = 10, seed = 242,
-                                allocation_type = "random"){
-  
-  #--------------------------------#
+                                allocation_type = "2FAM"){
+#--------------------------------#
   size.family =  dpsire   # tamanho da fam?lia 2
   ng.family=dpsire/(0.5*group_size)    # n?mero de grupos por fam?lia 2
   n.family = sires # 2
@@ -46,8 +45,15 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
   ng.block = (ng.family*(1 + ng.family))/2   # n?mero de grupos por bloco 2*3/2=3
   nf.block = (ng.family + 1)    # n?mero de fam?lias por bloco 2+1=3
   n.blocks = (n.family*size.family)/(ng.block*group_size)   # n?mero de blocos 2*2/6*2 = 2/3
-  #--------------------------------#
+#--------------------------------#
   
+#--------------3FAM----------# 
+  #ng.family=dpsire/((1/3)*group_size) # número de grupos por família 
+  #ng.block = ng.family*(ng.family-1) # n?mero de grupos por bloco  
+  #nf.block = 2*ng.family + 1  # número de famílias por bloco  
+  #n.blocks = (sires*dpsire)/(ng.block*group_size) # número de blocos  
+  #allocation_type = "3FAM" 
+#--------------------------------# 
   
   N <- sires * dpsire
   ngroups = N/group_size
@@ -71,23 +77,21 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
   
   for (replic in 1:num_replications) {
     
-    #----------------------------------------#
-    # definindo os valores gen?ticos #
-    #----------------------------------------#
-    # parents
+#----------------------------------------#
+# definindo os valores genéticos #
+#----------------------------------------#
+# parents
     covG = rhoG * sqrt(SigG.g) * sqrt(SigG.f)
     sigmaG = matrix(c(SigG.g, covG, covG, SigG.f), nc = 2, byrow = T)
     auxBV_sire <- mvrnorm(n = sires, mu = c(0, 0), Sigma = sigmaG)
     auxBV_dam <- mvrnorm(n = N, mu = c(0, 0), Sigma = sigmaG)
     
-    BV_sire <- data.frame(replicate = replic, sire_ID = 1:sires, ng.off = NA, Ag = auxBV_sire[, 1],
-                          Af = auxBV_sire[, 2])
+    BV_sire <- data.frame(replicate = replic, sire_ID = 1:sires, ng.off = NA, Ag = auxBV_sire[, 1], Af = auxBV_sire[, 2])
     BV_dam <- data.frame(replicate = replic, dam_ID = 1:N, sire_ID = sort(rep(1:sires, dpsire)),
                          Ag = auxBV_dam[, 1], Af = auxBV_dam[, 2])
     
-    #   # offspring
-    offspring <- data.frame(replicate = replic, ID = (1:N), sire_ID = sort(rep(1:sires,
-                                                                               dpsire)), Ag = rep(NA, N), Af = rep(NA, N))
+# offspring
+    offspring <- data.frame(replicate = replic, ID = (1:N), sire_ID = sort(rep(1:sires, dpsire)),Ag = rep(NA, N), Af = rep(NA, N))
     for (i in 1:sires) {
       mendelian_term <- mvrnorm(n = dpsire, mu = c(0, 0), Sigma = 0.5 * sigmaG)
       offspring[offspring$sire_ID == i, ]$Ag <- 0.5 * BV_sire$Ag[i] + 0.5 *
@@ -96,9 +100,9 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
         BV_dam[BV_dam$sire_ID == i, ]$Af + mendelian_term[, 2]
     }
     
-    #------------------------------------------------------#
-    # Simulating Phenotypes #
-    #------------------------------------------------------#
+#------------------------------------------------------#
+# Simulating Phenotypes #
+#------------------------------------------------------#
     covE = rhoE * sqrt(SigE.g) * sqrt(SigE.f)
     sigmaE = matrix(c(SigE.g, covE, covE, SigE.f), nc = 2, byrow = T)
     environ_effects <- mvrnorm(n = N, mu = c(0, 0), Sigma = sigmaE)
@@ -107,9 +111,9 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
     offspring$g <- offspring$Ag + offspring$Eg
     offspring$f <- offspring$Af + offspring$Ef
     
-    #-----------------#
-    # ALEATORIZANDO   #
-    #-----------------#
+#-----------------#
+# ALEATORIZANDO   #
+#-----------------#
     if (allocation_type == "random"){
       #------------------------------------------------------#
       # Assigning index cases and groups #
@@ -223,7 +227,7 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
     
     #offspring[offspring$index == 0, 'tau'] <- 0
     
-    #   # TODO include more than one replication in the same data frame
+    # TODO include more than one replication in the same data frame
     new.order <- c("replicate","ID", "sire_ID", "group", "index", "Ag", "Af", "Eg",
                    "Ef")
     offspring <- offspring[, new.order]
