@@ -131,6 +131,3 @@ generate_population <- function(num_replications = 1, sires = 2, dpsire = 2, rho
               offspring = offspring_all_replicates,
               relationship_matrix = as.matrix(relationship_matrix)))
 }
-
-
-generate_population()
