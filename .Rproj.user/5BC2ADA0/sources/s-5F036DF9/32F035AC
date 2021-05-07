@@ -1,0 +1,27 @@
+{
+    "id": "32F035AC",
+    "path": "~/GitHub/dnIGEmodel/R/generate_population.R",
+    "project_path": "R/generate_population.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1620257677314.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "wo1qnq3heguah",
+        "Source": "Source",
+        "cursorPosition": "261,0",
+        "scrollLine": "27",
+        "docOutlineVisible": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1620409211,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1620409211250,
+    "read_only": false,
+    "read_only_alternatives": []
+}

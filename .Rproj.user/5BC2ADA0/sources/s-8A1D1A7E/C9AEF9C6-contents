@@ -1,0 +1,204 @@
+#C?digo 1
+
+grp_size=100
+#============================================================
+#========Cen?rio 1: Os animais s?o geneticamente iguais
+#============================================================
+#----------Gera??o dos dados
+pop.1<- generate_population(sires=10, dpsire=10, group_size = grp_size,
+SigG.g=0,
+SigG.f=0,
+SigE.g=0,
+SigE.f=0 ,
+rhoG=0 ,
+rhoE=0,
+seed=242)
+#*********************Gera??o da epidemia
+df.1 <- pop.1$offspring
+df_epi.1<- generate_epidemics(df.1, group_size = grp_size)
+
+#----------Plot Velocidade da epidemia
+require("ggplot2")
+require("survival")
+require("survminer")
+library("reshape2")
+T1=df_epi.1$infection_time
+Y=0:(length(T1)-1)
+#plot(T1,Y,type="s",xlab="Time t",ylab="X(t)")
+dados=data.frame(x=T1,y=Y, t=rep(c("cen1"),each=100))
+ggplot(data=dados) + geom_step(aes(x=x,y=y,colour=t)) +labs(colour="Cen?rios")
+
+#*********************Plot Fun??o de sobreviv?ncia
+tempos=df_epi.1$infection_time
+cens=rep(1,length(tempos))
+dados.tc=data.frame(t=tempos,c=cens)
+ekm.1=survfit(Surv(t,c)~1,data=dados.tc)
+g.1=ggsurvplot(ekm.1,conf.int = FALSE, color = "red",ggtheme = theme_bw(),palette = "Dark2")
+g.1$plot
+g.1$plot+theme(legend.position="none") # tira strata e all em cima do graph
+g.1$plot+theme(legend.position="none")+labs(x="tempo",y="Sobreviv?ncia") # renomeia os eixos
+#============================================================
+
+
+
+#========Cen?rio 2: Os animais bloqueiam a infec??o de forma igual
+#============================================================
+#----------Gera??o dos dados
+pop.2<- generate_population(sires=10, dpsire=10, group_size = grp_size,
+SigG.g=0,
+SigG.f=5,
+SigE.g=0,
+SigE.f=4 ,
+rhoG=0 ,
+rhoE=0,
+seed=100)
+#*********************Gera??o da epidemia
+df.2<- pop.2$offspring
+df_epi.2<- generate_epidemics(df.2, group_size = grp_size)
+
+#----------Plot Velocidade da epidemia
+require("ggplot2")
+require("survival")
+require("survminer")
+library(reshape2)
+library("reshape2")
+T2=df_epi.2$infection_time
+Y=0:(length(T2)-1)
+#plot(T2,Y,type="s",xlab="Time t",ylab="X(t)")
+dados=data.frame(x=T2,y=Y, t=rep(c("cen2"),each=100))
+ggplot(data=dados) + geom_step(aes(x=x,y=y,colour=t)) +labs(colour="Cen?rios")
+
+#********************* Plot Fun??o de sobreviv?ncia
+tempos=df_epi.2$infection_time
+cens=rep(1, length(tempos))
+dados.tc=data.frame(t=tempos,c=cens)
+ekm.2=survfit(Surv(t,c)~1,data=dados.tc)
+g.2=ggsurvplot(ekm.2,conf.int = FALSE, color = "red",ggtheme = theme_gray(),palette = "Dark2")
+g.2$plot
+g.2$plot+theme(legend.position="none") # tira strata e all em cima do graph
+g.2$plot+theme(legend.position="none")+labs(x="tempo",y="Sobreviv?ncia") #============================================================
+
+
+
+
+#========Cen?rio 3: Os animais transmitem a infec??o de forma igual
+#============================================================
+#----------Gera??o dos dados
+pop.3<- generate_population(sires=10, dpsire=10, group_size = grp_size,
+SigG.g=9,
+SigG.f=0,
+SigE.g=4,
+SigE.f=0 ,
+rhoG=0 ,
+rhoE=0,
+seed=101)
+#*********************Gera??o da epidemia
+df.3 <- pop.3$offspring
+df_epi.3<- generate_epidemics(df.3, group_size = grp_size)
+
+#----------Plot Velocidade da epidemia
+require("ggplot2")
+require("survival")
+require("survminer")
+library("reshape2")
+require("ggpubr")
+T3=df_epi.3$infection_time
+Y=0:(length(T3)-1)
+#plot(T3,Y,type="s",xlab="Time t",ylab="X(t)")
+dados=data.frame(x=T3,y=Y, t=rep(c("cen3"),each=100))
+ggplot(data=dados) + geom_step(aes(x=x,y=y,colour=t)) +labs(colour="Cen?rios")+theme_gray()
+
+#********************* Plot Fun??o de sobreviv?ncia
+tempos=df_epi.3$infection_time
+cens=rep(1,length(tempos))
+dados.tc=data.frame(t=tempos,c=cens)
+ekm.3=survfit(Surv(t,c)~1,data=dados.tc)
+g.3=ggsurvplot(ekm.3,conf.int = FALSE, color = "red",ggtheme = theme_gray(),palette = "Dark2")
+g.3$plot
+g.3$plot+theme(legend.position="none") # tira strata e all em cima do graph
+g.3$plot+theme(legend.position="none")+labs(x="tempo",y="Sobreviv?ncia") #============================================================
+
+
+
+#========Cen?rio 4: Varia??es nas duas
+#============================================================
+#----------Gera??o dos dados
+pop.4<- generate_population(sires=10, dpsire=10, group_size = grp_size,
+SigG.g=10,
+SigE.g=0.4,
+SigG.f=1,
+SigE.f=0.2,
+rhoG=0.45,
+rhoE=0.45,
+seed=242)
+#*********************Gera??o da epidemia
+df.4 <- pop.4$offspring
+df_epi.4<- generate_epidemics(df.4, group_size = grp_size)
+
+#----------Plot Velocidade da epidemia
+require("ggplot2")
+require("survival")
+require("survminer")
+library("reshape2")
+T4=df_epi.4$infection_time
+Y=0:(length(T4)-1)
+#plot(T4,Y,type="s",xlab="Time t",ylab="X(t)")
+dados=data.frame(x=T4,y=Y, t=rep(c("cen4"),each=100))
+ggplot(data=dados) + geom_step(aes(x=x,y=y,colour=t)) +labs(colour="Cen?rios")+theme_gray()+xlim(0, max(T4))
+
+
+
+#********************* Plot Fun??o de sobreviv?ncia
+tempos=df_epi.4$infection_time
+cens=rep(1,length(tempos))
+dados.tc=data.frame(t=tempos,c=cens)
+ekm.4=survfit(Surv(t,c)~1,data=dados.tc)
+g.4=ggsurvplot(ekm.4,conf.int = FALSE, color = "red",ggtheme = theme_gray(),palette = "Dark2")
+g.4$plot
+g.4$plot+theme(legend.position="none") # tira strata e all em cima do graph
+g.4$plot+theme(legend.position="none")+labs(x="tempo",y="Sobreviv?ncia") +xlim(0, 15)
+#============================================================
+
+
+
+
+#========Todos os cen?rios
+#============================================================
+#--------------Velocidade da epidemia
+#dados=data.frame(x=T1,y=Y, t=rep(c("cen1"),each=100))
+
+dados=data.frame(x=c(T1,T2,T3,T4),y=c(Y,Y,Y,Y),t=rep(c("cen1","cen2","cen3","cen4"),each=100))
+dados
+a=ggplot(data=dados) + geom_step(aes(x=x,y=y,colour=t))+labs(x="tempos",y="X(t)",colour="Cen?rios")+xlim(0, max(c(T1,T2,T3,T4)))
+a
+
+
+
+#*********************Plot Fun??o de sobreviv?ncia
+library(ggplot2)
+library(survminer)
+library(survival)
+library(tidyverse)
+library(broom)
+library(gridExtra)
+t1=df_epi.1$infection_time
+t2=df_epi.2$infection_time
+t3=df_epi.3$infection_time
+t4=df_epi.4$infection_time
+#cens=rbinom(100,size=1,0.5)
+cens=rep(1,length(t1))
+dados=data.frame(t=c(t1,t2,t3,t4),c=rep(cens,4),cenario=factor(rep(1:4,each=100)))
+dados
+ekm=survfit(Surv(t,c)~cenario,data=dados)
+
+b=tidy(ekm) %>%
+  mutate(strata=gsub(pattern = "ario=",replacement = "",x = strata),
+         n.event=factor(n.event)) %>%
+  ggplot(aes(x=time,y=estimate,colour=strata))+
+  geom_step(direction = "hv") +labs(x="tempos",y="sobreviv?ncia",colour="cenarios")+
+  geom_point(aes(shape=n.event),show.legend = FALSE) +
+  scale_shape_manual(values = c("0"=3,"1"=NA))+xlim(0, max(t1,t2,t3,t4))
+
+#g=ggsurvplot(ekm,conf.int = FALSE,legend.labs=c("cen1","cen2","cen3","cen4") )
+#g$plot+labs(colour="")+theme(legend.position = "bottom")
+grid.arrange(a,b, ncol=2)

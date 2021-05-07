@@ -1,0 +1,37 @@
+grp_size=100  
+#=============================================================
+#========Cen?rio 1: Os animais s?o geneticamente iguais
+#=============================================================
+#----------Gera??o dos dados
+pop.1<- generate_population(sires=5, dpsire=20, group_size = grp_size, 
+SigG.g=0, 
+SigG.f=0, 
+SigE.g=0, 
+SigE.f=0 , 
+rhoG=0 , 
+rhoE=0,
+seed=242)
+#*********************Gera??o da epidemia
+df.1 <- pop.1$offspring
+df_epi.1<- generate_epidemics(df.1, group_size = grp_size)
+
+#----------Plot Velocidade da epidemia
+require("ggplot2")
+require("survival")
+require("survminer")
+library("reshape2")
+T1=cumsum(df_epi.1$infection_time)
+Y=0:(length(T1)-1)
+#plot(T1,Y,type="s",xlab="Time t",ylab="X(t)")
+dados=data.frame(x=T1,y=Y, t=rep(c("cen1"),each=100))
+ggplot(data=dados) + geom_step(aes(x=x,y=y,colour=t)) +labs(colour="Cen?rios")
+
+#*********************Plot Fun??o de sobreviv?ncia
+tempos=df_epi.1$infection_time
+cens=c(0,rep(1,(length(tempos)-1)))
+dados.tc=data.frame(t=tempos,c=cens)
+ekm=survfit(Surv(t,c)~1,data=dados.tc) 
+g=ggsurvplot(ekm,conf.int = FALSE, color = "red",ggtheme = theme_bw(),palette = "Dark2")
+g$plot
+g$plot+theme(legend.position="none") # tira strata e all em cima do graph
+g$plot+theme(legend.position="none")+labs(x="tempo",y="Sobreviv?ncia") # renomeia os eixos
