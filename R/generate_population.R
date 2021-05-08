@@ -30,11 +30,33 @@
 library(MASS)
 
 # assumes same relationship matrix for all replicates!
-generate_population <- function(num_replications = 1, sires = 2, dpsire = 2, rhoG = 0,
-  rhoE = 0, SigG.g = 4, SigG.f = 4, SigE.g = 1, SigE.f = 1, group_size = 2, seed = 242) {
+generate_population <- function(num_replications = 1, sires = 25, dpsire = 2, rhoG = 0,
+  rhoE = 0, SigG.g = 4, SigG.f = 4, SigE.g = 1, SigE.f = 1, group_size = 2, seed = 242,allocation_type = "random") {
 
   N <- sires * dpsire
   ngroups = N/group_size
+  #--------------2FAM---------------#
+  #Número de grupos por família
+  ng.family=dpsire/(0.5*group_size)    # número de grupos por família
+  
+  # Número de grupos por bloco
+  ng.block = (ng.family*(1 + ng.family))/2   # número de grupos por bloco
+  
+  # Número de famílias por bloco
+  nf.block = (ng.family + 1)    # número de famílias por bloco
+  
+  # Número de blocos
+  n.blocks = (n.family*size.family)/(ng.block*group_size)   # número de blocos
+  #--------------3FAM--------------#
+  #Número de grupos por família
+  #ng.family=dpsire/((1/3)*group_size)
+  
+  # Número de grupos por bloco
+  #ng.block = ng.family*(ng.family-1) 
+  
+  # Número de famílias por bloco
+  #nf.block = 2*ng.family + 1  # número de famílias por bloco
+  
   set.seed(seed)
 
   BV_sire_all_replicates <- data.frame(replicate = numeric(), sire_ID = numeric(), ng.off = numeric(),
