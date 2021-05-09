@@ -8,8 +8,8 @@ result_random <- generate_population(
     allocation_type = "random",
     num_replications =1,
     group_size = grp_size,
-    sires = 25,
-    dpsire = 2
+    sires = 100,
+    dpsire = 20
   )
 
 result_2FAM <-
@@ -17,8 +17,8 @@ result_2FAM <-
     allocation_type = "2FAM",
     num_replications = 1,
     group_size = grp_size,
-    sires = 25,
-    dpsire = 2,
+    sires = 100,
+    dpsire = 20,
   )
 
 
