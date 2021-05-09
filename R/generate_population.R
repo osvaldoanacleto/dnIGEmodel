@@ -274,3 +274,4 @@ head(result_random$offspring)
 
 result_2FAM
 
+
