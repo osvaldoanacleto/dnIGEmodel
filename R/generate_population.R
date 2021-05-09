@@ -30,11 +30,13 @@
 library(MASS)
 
 # assumes same relationship matrix for all replicates!
-generate_population <- function(num_replications = 1, sires = 25, dpsire = 2, rhoG = 0,
+generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, rhoG = 0,
   rhoE = 0, SigG.g = 4, SigG.f = 4, SigE.g = 1, SigE.f = 1, group_size = 2, seed = 242,allocation_type = "random") {
 
   N <- sires * dpsire
   ngroups = N/group_size
+  n.family = sires
+  size.family =  dpsire
   #--------------2FAM---------------#
   #Número de grupos por família
   ng.family=dpsire/(0.5*group_size)    # número de grupos por família
