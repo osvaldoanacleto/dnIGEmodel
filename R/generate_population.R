@@ -134,7 +134,6 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
     }
     
     if (allocation_type == "2FAM"){
-      ####################################################################
       #------------------------------------------------------------------#
       
       #-------------------#
@@ -271,7 +270,7 @@ result_2FAM <- generate_population(allocation_type = "2FAM")
 head(result_2FAM$offspring)
 
 head(result_random$offspring)
-
+result_random
 result_2FAM
 
 

@@ -1,4 +1,7 @@
 {
-    "activeTabSourceWindow0": 0,
-    "activeTab": 0
+<<<<<<< HEAD
+    "activeTab": -1
+=======
+    "activeTab": 1
+>>>>>>> 9c1ccac819ce020f9d1299c9bb7defe02a9f53d5
 }
