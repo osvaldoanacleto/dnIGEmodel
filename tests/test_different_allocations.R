@@ -1,6 +1,4 @@
-library(devtools)
-install_github("osvaldoanacleto/dnIGEmodel", ref = "experimental_design")
-library(dnIGEmodel)
+›
 
 grp_size <- 10
 
