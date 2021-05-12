@@ -223,7 +223,7 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
       
       
       offspring$group <- familia$groups
-      offspring$index <- NA
+      offspring$index <- sample(c(rep(0,ngroups),rep(1,N-ngroups)),replace=F)#NA
 #------------------------------------------------------------------#
 }
     
