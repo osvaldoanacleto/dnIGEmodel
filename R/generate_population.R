@@ -184,7 +184,7 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
       familia <- as.data.frame(cbind(pais, filhos))
       
       #--------------------------------------------------------#
-      # Inserinfo a Variável 'groups' no dataset               #
+      # Inserindo a Variável 'groups' no dataset               #
       # Esta variável será determinada pelo algoritmo a seguir #
       #--------------------------------------------------------#
       
