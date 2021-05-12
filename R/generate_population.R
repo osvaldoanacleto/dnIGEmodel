@@ -270,6 +270,7 @@ result_2FAM <- generate_population(allocation_type = "2FAM")
 head(result_2FAM$offspring)
 
 head(result_random$offspring)
+
 result_random
 result_2FAM
 
