@@ -92,7 +92,7 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
     BV_dam <- data.frame(replicate = replic, dam_ID = 1:N, sire_ID = sort(rep(1:sires, dpsire)),
                          Ag = auxBV_dam[, 1], Af = auxBV_dam[, 2])
     
-    #   # offspring
+    # offspring
     offspring <- data.frame(replicate = replic, ID = (1:N), sire_ID = sort(rep(1:sires,
                                                                                dpsire)), Ag = rep(NA, N), Af = rep(NA, N))
     for (i in 1:sires) {
@@ -134,6 +134,7 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
     }
     
     if (allocation_type == "2FAM"){
+      
       #------------------------------------------------------------------#
       
       #-------------------#
@@ -222,25 +223,29 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
       
       
       offspring$group <- familia$groups
-      offspring$index <- NA
-      #------------------------------------------------------------------#
-      ####################################################################
+     
+      
+ offspring$index <- sample(c(rep(0,ngroups),rep(1,N-ngroups)),replace=F)#NA
+
+                                                        
     }
+ #------------------------------------------------------------------#
+}
     
-    #offspring[offspring$index == 0, 'tau'] <- 0
+#offspring[offspring$index == 0, 'tau'] <- 0
     
-    #   # TODO include more than one replication in the same data frame
-    new.order <- c("replicate","ID", "sire_ID", "group", "index", "Ag", "Af", "Eg",
+# TODO include more than one replication in the same data frame
+  new.order <- c("replicate","ID", "sire_ID", "group", "index", "Ag", "Af", "Eg",
                    "Ef")
-    offspring <- offspring[, new.order]
+  offspring <- offspring[, new.order]
     
-    for (i in 1:sires) BV_sire[i, "ng.off"] <- with(offspring[offspring$sire_ID ==
+  for (i in 1:sires) BV_sire[i, "ng.off"] <- with(offspring[offspring$sire_ID ==
                                                                 i, ], dim(table(group)))
     
     
-    BV_sire_all_replicates  <- rbind(BV_sire_all_replicates, BV_sire)
-    BV_dam_all_replicates  <- rbind(BV_dam_all_replicates, BV_dam)
-    offspring_all_replicates <- rbind(offspring_all_replicates, offspring)
+  BV_sire_all_replicates  <- rbind(BV_sire_all_replicates, BV_sire)
+  BV_dam_all_replicates  <- rbind(BV_dam_all_replicates, BV_dam)
+  offspring_all_replicates <- rbind(offspring_all_replicates, offspring)
   }
   
   # relationship matrix (A)
