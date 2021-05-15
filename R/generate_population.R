@@ -150,7 +150,7 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
       #-------------------------------------------#
       # E as 'Maes' por 'pais' assim#
       #-------------------------------------------#
-      
+      #size.family(20)*ng.block(10)=200
       mae <- rep(NA, size.family*ng.block)
       
       i <-1
