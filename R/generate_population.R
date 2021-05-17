@@ -34,7 +34,7 @@ library(MASS)
 #                                rhoE = 0, SigG.g = 4, SigG.f = 4, SigE.g = 1, SigE.f = 1, group_size = 2, seed = 242) {
 
 # Com altereações
-generate_population <- function(num_replications = 1, sires = 25, dpsire = 2, rhoG = 0,
+generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, rhoG = 0,
                                 rhoE = 0, SigG.g = 4, SigG.f = 4, SigE.g = 1, SigE.f = 1, group_size = 10, seed = 242,
                                 allocation_type = "random"){
   N <- sires * dpsire
