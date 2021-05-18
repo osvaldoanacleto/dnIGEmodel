@@ -76,7 +76,7 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
   #                                       Af = numeric(), Eg = numeric(), Ef = numeric(),
   #                                       stringsAsFactors = FALSE)
   
-  for (replic in 1:num_replications) {
+  for (replic in 1:num_replications){
     
     #----------------------------------------#
     # definindo os valores genéticos #
@@ -114,17 +114,14 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
     offspring$g <- offspring$Ag + offspring$Eg
     offspring$f <- offspring$Af + offspring$Ef
     
-    #-----------------#
-    # ALEATORIZANDO   #
-    #-----------------#
+    #-----------------------------------------#
+    # Quando a alocação é do tipo aleatória#
+    #-----------------------------------------#
     if (allocation_type == "random"){
       #------------------------------------------------------#
       # Assigning index cases and groups #
       #------------------------------------------------------#
-      #------------------------------#
-      # Random family assignment #
-      #------------------------------#
-      # index cases ngroups = 12; group_size = 2
+      # index cases ngroups 
       offspring[, "index"] <- sample(c(rep(0,ngroups),rep(1,N-ngroups)),replace=F)
       # groups:
       offspring$group <- NA
@@ -132,32 +129,32 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
       offspring[offspring$index == 1, ]$group <- sample(rep(1:ngroups, group_size -
                                                               1), replace = F)
     }
-    
+    #-----------------------------------------#
+    # Quando a alocação é do tipo "2FAM"      #
+    #-----------------------------------------#   
     if (allocation_type == "2FAM"){
       
-      #------------------------------------------------------------------#
-      
       #-------------------#
-      # Gerando os 'Pais' #
+      # os sires são gerados assim #
       #-------------------#
-      
-      pai <- rep(NA, size.family*ng.block)
-      
+      #size.family(20)*ng.block(10)=200
+      pai <- rep(NA, size.family*ng.block)#cada pai aparece 4x dentro do block
       k<-1
-      for (j in 1:(nf.block*size.family)) {
+      #size.family(20)*nf.block(5)=100
+      for (j in 1:(size.family*nf.block)) {
         pai[seq(k,k+(size.family-1),1)] <- rep(j, size.family)
         k <- k+size.family
       }
       
       
       #-------------------------------------------#
-      # Gerando as 'Maes' para cada um dos 'Pais' #
+      # E as 'Maes' por 'pais' assim#
       #-------------------------------------------#
       
       mae <- rep(NA, size.family*ng.block)
       
       i <-1
-      for(p in 1:(nf.block*size.family)){
+      for(p in 1:(size.family*nf.block)){
         for (m in 1:size.family) {
           mae[i] <- paste(paste("mae", m, sep = "_"), p, sep = "_pai_")
           i <- i+1
@@ -226,9 +223,6 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
      
       
  offspring$index <- sample(c(rep(0,ngroups),rep(1,N-ngroups)),replace=F)#NA
-
-                                                        
-    }
  #------------------------------------------------------------------#
 }
     
@@ -254,27 +248,24 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
   for (i in 2:(sires+1)){
     relationship_matrix_aux[[i]] <- matrix(0.25, dpsire, dpsire)
     diag(relationship_matrix_aux[[i]]) <- 1
-  }
+  
+    }
   relationship_matrix <- dlm::bdiag(relationship_matrix_aux)
-  
-  
   
   return(list(sire = BV_sire_all_replicates,
               dam = BV_dam_all_replicates,
               offspring = offspring_all_replicates,
               relationship_matrix = as.matrix(relationship_matrix))) #,data_set_familia = familia))
-}
 
 result_random <- generate_population(allocation_type = "random")
 result_2FAM <- generate_population(allocation_type = "2FAM")
+}
 
 
 #levels(as.factor(result_random$offspring$replicate))
 
 
-head(result_2FAM$offspring)
-
-head(result_random$offspring)
+#head(result_random$offspring)
 
 result_random
 result_2FAM
