@@ -150,7 +150,7 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
       #-------------------------------------------#
       # E as 'Maes' por 'pais' assim#
       #-------------------------------------------#
-      
+      #size.family(20)*ng.block(10)=200
       mae <- rep(NA, size.family*ng.block)
       
       i <-1
@@ -222,7 +222,14 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
       offspring$group <- familia$groups
      
       
- offspring$index <- sample(c(rep(0,ngroups),rep(1,N-ngroups)),replace=F)#NA
+ #offspring$index <- sample(c(rep(0,ngroups),rep(1,N-ngroups)),replace=F)#NA
+      offspring$index <- rep(NA, 2000)
+      
+      for (grp in unique(offspring$group)) {
+        offspring[offspring$group == grp,]$index <- sample(c(0,rep(1,9)),replace = F)
+      }   
+      
+      offspring[order(offspring$groups),]   
  #------------------------------------------------------------------#
 }
     

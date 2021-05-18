@@ -1,5 +1,3 @@
-›
-
 grp_size <- 10
 
 result_random <- generate_population(
