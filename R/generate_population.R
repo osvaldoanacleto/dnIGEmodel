@@ -34,7 +34,7 @@ library(MASS)
 #                                rhoE = 0, SigG.g = 4, SigG.f = 4, SigE.g = 1, SigE.f = 1, group_size = 2, seed = 242) {
 
 # Com altereações
-generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, rhoG = 0,
+generate_population <- function(num_replications = 1, sires = 25, dpsire = 2, rhoG = 0,
                                 rhoE = 0, SigG.g = 4, SigG.f = 4, SigE.g = 1, SigE.f = 1, group_size = 10, seed = 242,
                                 allocation_type = "random"){
   N <- sires * dpsire
@@ -230,9 +230,7 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
       offspring[order(offspring$groups),]   
 #------------------------------------------------------------------#
 }
-    
 #offspring[offspring$index == 0, 'tau'] <- 0
-    
 # TODO include more than one replication in the same data frame
   new.order <- c("replicate","ID", "sire_ID", "group", "index", "Ag", "Af", "Eg",
                    "Ef")
@@ -267,8 +265,6 @@ result_2FAM <- generate_population(allocation_type = "2FAM")
 
 
 #levels(as.factor(result_random$offspring$replicate))
-
-
 #head(result_random$offspring)
 
 result_random
