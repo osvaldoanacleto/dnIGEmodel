@@ -1,4 +1,17 @@
+<<<<<<< HEAD
 /home/laramidena/R/Milena/dnIGEmodel/R/generate_population.R="E6258071"
 C:/Users/Vaio/Documents/GitHub/dnIGEmodel/R/generate_epidemics.R="DB73030D"
 C:/Users/Vaio/Documents/GitHub/dnIGEmodel/R/generate_population.R="25985E85"
 C:/Users/Vaio/Documents/GitHub/dnIGEmodel/tests/test_different_allocations.R="48149D25"
+=======
+C:/Users/Vaio/Documents/GitHub/dnIGEmodel/R/generate_epidemics.R="DB73030D"
+C:/Users/Vaio/Documents/GitHub/dnIGEmodel/R/generate_population.R="25985E85"
+C:/Users/Vaio/Documents/GitHub/dnIGEmodel/tests/test_different_allocations.R="48149D25"
+C:/Users/Vaio/Google Drive/Cenários/arquivo_erro.R="79080D8D"
+C:/Users/Vaio/Google Drive/Cenários/cenario1.R="BF2D60CF"
+C:/Users/Vaio/Google Drive/Cenários/cenarios_atualizados.R="FA8808FD"
+C:/Users/Vaio/Google Drive/Cenários/teste_ggplot_oilson.R="15AFCFC3"
+C:/Users/Vaio/Google Drive/Cenários/todos.R="61EF9599"
+C:/Users/Vaio/Google Drive/Mi/3FAM.R="C055CE1B"
+C:/Users/Vaio/Google Drive/Mi/pack_radomization.R="020B23BB"
+>>>>>>> 1bd3ee954e48b4bb002a45ecbd2fbdf59fc0141c
