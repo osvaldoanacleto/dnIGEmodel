@@ -40,41 +40,6 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
   N <- sires * dpsire
   ngroups = N/group_size
   set.seed(seed)
-  #--------------2FAM-----------------#
-  #Número de famílias
-  n.family = sires   # número de famílias
-  
-  #Tamanho das famílias
-  size.family =  dpsire   # tamanho da família
-  
-  #Número de grupos
-  ngroups = N/group_size
-  
-  #Número de grupos por família
-  ng.family=dpsire/(0.5*group_size)    # número de grupos por família
-  
-  # Número de grupos por bloco
-  ng.block = (ng.family*(1 + ng.family))/2   # número de grupos por bloco
-  
-  # Número de famílias por bloco
-  nf.block = (ng.family + 1)    # número de famílias por bloco
-  
-  # Número de blocos
-  n.blocks = (n.family*size.family)/(ng.block*group_size)   # número de blocos
-  #--------------3FAM-----------------#
-  
-  #Número de grupos por família
-  #ng.family=dpsire/((1/3)*group_size)    
-  
-  # Número de grupos por bloco
-  #ng.block = ng.family*(ng.family-1) 
-  
-  # Número de famílias por bloco
-  #nf.block = 2*ng.family + 1  # número de famílias por bloco 
-  
-  
-  
-
   BV_sire_all_replicates <- data.frame(replicate = numeric(), sire_ID = numeric(), ng.off = numeric(),
                          Ag = numeric(), Af = numeric(), stringsAsFactors = FALSE)
 
@@ -124,9 +89,10 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
     offspring$g <- offspring$Ag + offspring$Eg
     offspring$f <- offspring$Af + offspring$Ef
     
-    #-----------------#
-    # ALEATORIZANDO   #
-    #-----------------#
+    #==================================================================================#
+    #--------------------------Alocação tipo RANDOM                  
+    #==================================================================================#
+    i
     if (allocation_type == "random"){
       #------------------------------------------------------#
       # Assigning index cases and groups #
@@ -142,104 +108,48 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
       offspring[offspring$index == 1, ]$group <- sample(rep(1:ngroups, group_size -
                                                               1), replace = F)
     }
-    
+    #==================================================================================#
+    #--------------------------Alocação tipo 2FAM                   
+    #==================================================================================#
     if (allocation_type == "2FAM"){
-      ####################################################################
-      #------------------------------------------------------------------#
-      
-      #-------------------#
-      # Gerando os 'Pais' #
-      #-------------------#
-      
-      pai <- rep(NA, size.family*ng.block)
-      
-      k<-1
-      for (j in 1:(nf.block*size.family)) {
-        pai[seq(k,k+(size.family-1),1)] <- rep(j, size.family)
-        k <- k+size.family
-      }
-      
-      #-------------------------------------------#
-      # Gerando as 'Maes' para cada um dos 'Pais' #
-      #-------------------------------------------#
-      
-      mae <- rep(NA, size.family*ng.block)
-      
-      i <-1
-      for(p in 1:(nf.block*size.family)){
-        for (m in 1:size.family) {
-          mae[i] <- paste(paste("mae", m, sep = "_"), p, sep = "_pai_")
-          i <- i+1
-        }
-      }
-      #----------------------------------#
-      # Gerando um filho para cada 'Mae' # 
-      # Meio-irm?os                      #
-      #----------------------------------#
-      
-      filhos <- rep(NA, size.family*ng.block)
-      
-      nf <- 1
-      for (f in 1:(size.family*ng.block)) {
-        filhos[f] <- paste(paste("filho", nf, sep = "_"), mae[f], sep = "_")
-        
-        if (nf == size.family){
-          nf <- 1
-        }else{
-          nf <- nf+1
-        }
-      }
-      
-      familia <- as.data.frame(cbind(pais, filhos))
-      #--------------------------------------------------------#
-      # Inserindo a Variável 'groups' no dataset               #
-      # Esta vari?vel ser? determinada pelo algoritmo a seguir #
-      #--------------------------------------------------------#
-      
-      familia$groups <- rep(NA, size.family*ng.block)
-      #----------------------------------#
-      # FORMAR BLOCKS                    #
-      # 100/5 = 20                       #
-      # Gerando os Grupos Aleat?riamente #
-      # ap?s definidos os blocos         #
-      #----------------------------------#
-      
-      for (block in 1:n.blocks) {
-        
+      n.family = sires 
+      size.family =  dpsire 
+      ng.family=dpsire/(0.5*group_size)
+      ng.block = (ng.family*(1 + ng.family))/2  
+      nf.block = (ng.family + 1)   
+      n.blocks = (ngroups*group_size)/(ng.block*group_size)
+      #------------------------------------#
+      # Genitores #
+      #------------------------------------#
+      pai = sort(rep(1:sires, dpsire)) 
+      familia <- as.data.frame(pai,stringsAsFactors = FALSE)
+      familia$groups <- rep(NA, N)
+      #------------------------------------#
+      # Formação dos BLOCOS #
+      #------------------------------------#
+      a<-1
+      for (block in 1:(n.blocks)) {
         # Identificando o range dos pais
         p1 <- nf.block*(block-1) +1 
         p2 <- nf.block*block
-        
-        # Criando combina??es de familias
-        comb_pais <- combn(seq(p1, p2, 1), 2)
-        
-        # Sele??o aleatoria para cada grupo
-        for (jj in 1:ng.block) {
+        # Criando combinações de familias
+        comb_pais <- combn(seq(p1, p2,1), 2)
+        # Seleção aleatoria para cada grupo
+        for (jj in 1:ncol(comb_pais)) {
           combinacao <- comb_pais[, jj]
-          
-          indiv1 <- sample(rownames(familia[familia$pai == combinacao[1] & is.na(familia$groups), ]), nf.block, replace = F)
-          indiv2 <- sample(rownames(familia[familia$pai == combinacao[2] & is.na(familia$groups), ]), nf.block, replace = F)
-          
-          
-          familia[c(indiv1, indiv2), "groups"] <- paste(combinacao[1], combinacao[2], sep = "|")
-          
+          indiv1 <- sample(which(familia$pai == combinacao[1]& is.na(familia$groups)), ((0.5)*group_size), replace = F)
+          indiv2 <- sample(which(familia$pai == combinacao[2] & is.na(familia$groups)), ((0.5)*group_size), replace = F)
+          familia[c(indiv1,indiv2), "groups"] <-a
+          a<-a+1          
         }
       }
       
-      
       offspring$group <- familia$groups
-      offspring$index <- NA
-      
-    }
-    # index cases
-   # offspring[, "index"] <- sample(c(rep(0,ngroups),rep(1,N-ngroups)),replace=F)
-    # groups:
-    #offspring$group <- NA
-    #offspring[offspring$index == 0, ]$group <- 1:ngroups
-    #offspring[offspring$index == 1, ]$group <- sample(rep(1:ngroups, group_size -
-     # 1), replace = F)
-    #offspring[offspring$index == 0, 'tau'] <- 0
-
+      offspring$index <- rep(NA, N)
+      for (grp in unique(offspring$group)) {
+        offspring[offspring$group == grp,]$index <- sample(c(0,rep(1,group_size-1)),replace = F)
+      }   
+    }#Final de allocation 2FAM
   #   # TODO include more than one replication in the same data frame
     new.order <- c("replicate","ID", "sire_ID", "group", "index", "Ag", "Af", "Eg",
       "Ef")
@@ -271,16 +181,4 @@ generate_population <- function(num_replications = 1, sires = 100, dpsire = 20, 
               relationship_matrix = as.matrix(relationship_matrix)))
   }
   
-
-  
-  result_random <- generate_population(allocation_type = "random")
-  result_2FAM <- generate_population(allocation_type = "2FAM")
-  
-  
-  #levels(as.factor(result_random$offspring$replicate))
-  
-  
-  head(result_2FAM$offspring)
-  
-  head(result_random$offspring)
   
