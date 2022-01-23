@@ -1,5 +1,8 @@
 stan_model_file <-
   "/Users/osvaldo/Documents/repos/dnIGEmodel/R/dnIGE_sire_model.stan"
+
+ # "/Users/osvaldo/Documents/repos/dnIGEmodel/R/dnIGE_sire_model_vero_gillespie.stan"
+  
 # option  + ß: <- !
 enableJIT(3)
 estimate_model_parameters_stan <- function(offspring_replicates,

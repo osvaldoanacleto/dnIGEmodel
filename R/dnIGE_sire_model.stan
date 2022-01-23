@@ -1,9 +1,3 @@
-// Learn more about model development with Stan at:
-//
-//    http://mc-stan.org/users/interfaces/rstan.html
-//    https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started
-//
-
 data {
   int<lower=0> N;  
   int<lower=0> S; 
@@ -42,7 +36,6 @@ transformed parameters{
 }
 
 model {
-  real lambda ;
   
   target += gamma_lpdf(precision_Sg | 0.001, 0.001); 
   target += gamma_lpdf(precision_Eg | 0.001, 0.001); 
@@ -65,22 +58,25 @@ model {
 
   for(j in 1:N){
     if(n_index[j]==1){
-      lambda = 0 ;
       target += (Ag[sire_ID[j]] + Eg[j]) ;
        for(k in 1:N){
-        target +=  (
-                    (group[j] == group[k]) *
+        if(group[j] == group[k]) {
+          target +=  (
+                      // (group[j] == group[k]) *
+                      (ID[k] != ID[j]) *
+                      (infection_time[k] < infection_time[j])
+                      ) *
+                      exp(Af[sire_ID[k]] + Ef[k]);
+          target += - exp(Ag[sire_ID[j]] + Eg[j]) *
+                    (
+                    // (group[j] == group[k]) *
                     (ID[k] != ID[j]) *
-                    (infection_time[k] < infection_time[j])
-                    )*
-                    exp(Af[sire_ID[k]] + Ef[k]);
-        target += exp(Ag[sire_ID[j]] + Eg[j])*
-                  (group[j] == group[k]) *
-                  (ID[k] != ID[j]) *
-                  (infection_time[k] < infection_time[j]) *
-                  (infection_time[j] - infection_time[k]) *
-                  exp(Af[sire_ID[k]] + Ef[k]) ;
-     }
+                    (infection_time[k] < infection_time[j]) *
+                    (infection_time[j] - infection_time[k]) *
+                    exp(Af[sire_ID[k]] + Ef[k])
+                    );
+          }
+      }
   }
 }
 }
