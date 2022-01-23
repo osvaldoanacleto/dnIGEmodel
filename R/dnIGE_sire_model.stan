@@ -36,7 +36,8 @@ transformed parameters{
 }
 
 model {
-  
+  real infectivity_term;
+    
   target += gamma_lpdf(precision_Sg | 0.001, 0.001); 
   target += gamma_lpdf(precision_Eg | 0.001, 0.001); 
   target += gamma_lpdf(precision_Sf | 0.001, 0.001); 
@@ -59,25 +60,22 @@ model {
   for(j in 1:N){
     if(n_index[j]==1){
       target += (Ag[sire_ID[j]] + Eg[j]) ;
+      infectivity_term = 0;
        for(k in 1:N){
-        if(group[j] == group[k]) {
-          target +=  (
-                      // (group[j] == group[k]) *
-                      (ID[k] != ID[j]) *
-                      (infection_time[k] < infection_time[j])
-                      ) *
-                      exp(Af[sire_ID[k]] + Ef[k]);
-          target += - exp(Ag[sire_ID[j]] + Eg[j]) *
-                    (
-                    // (group[j] == group[k]) *
-                    (ID[k] != ID[j]) *
-                    (infection_time[k] < infection_time[j]) *
-                    (infection_time[j] - infection_time[k]) *
-                    exp(Af[sire_ID[k]] + Ef[k])
-                    );
+        if( (group[j] == group[k]) && 
+            (ID[k] != ID[j]) &&
+            (infection_time[k] < infection_time[j]))
+          {
+          target +=  exp(Af[sire_ID[k]] + Ef[k]);
+          infectivity_term = infectivity_term + 
+                    ((infection_time[j] - infection_time[k]) *
+                    exp(Af[sire_ID[k]] + Ef[k]));
           }
       }
+        target += - exp(Ag[sire_ID[j]] + Eg[j]) * infectivity_term;
+
+    }
   }
 }
-}
+
 
