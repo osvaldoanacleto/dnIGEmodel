@@ -7,7 +7,6 @@ data {
   int<lower=0> group_size; 
   vector[N] n_index;
   vector[N] infection_time;
-  vector[N] ID;
   vector[N] is_last_infection;
   real mean_Ag; 
   real mean_Af; 
@@ -36,13 +35,15 @@ transformed parameters{
 }
 
 model {
-  real infectivity_term;
-    
-  target += gamma_lpdf(precision_Sg | 0.001, 0.001); 
-  target += gamma_lpdf(precision_Eg | 0.001, 0.001); 
-  target += gamma_lpdf(precision_Sf | 0.001, 0.001); 
-  target += gamma_lpdf(precision_Ef | 0.001, 0.001); 
-  
+  real lambda;
+  real infect1;
+  real infect2;
+
+  target += gamma_lpdf(precision_Sg | 0.01, 0.01); 
+  target += gamma_lpdf(precision_Eg | 0.01, 0.01); 
+  target += gamma_lpdf(precision_Sf | 0.01, 0.01); 
+  target += gamma_lpdf(precision_Ef | 0.01, 0.01); 
+
   for (i in 1:S){
     target += normal_lpdf(Ag[i] | mean_Ag, sqrt(sigma_Sg)); 
     target += normal_lpdf(Af[i] | mean_Af, sqrt(sigma_Sf)); 
@@ -59,23 +60,15 @@ model {
 
   for(j in 1:N){
     if(n_index[j]==1){
-      target += (Ag[sire_ID[j]] + Eg[j]) ;
-      infectivity_term = 0;
-       for(k in 1:N){
-        if( (group[j] == group[k]) && 
-            (ID[k] != ID[j]) &&
-            (infection_time[k] < infection_time[j]))
-          {
-          target +=  exp(Af[sire_ID[k]] + Ef[k]);
-          infectivity_term = infectivity_term + 
-                    ((infection_time[j] - infection_time[k]) *
-                    exp(Af[sire_ID[k]] + Ef[k]));
-          }
-      }
-        target += - exp(Ag[sire_ID[j]] + Eg[j]) * infectivity_term;
-
+      lambda = 0;
+      infect1 = 0;
+      infect2 = 0;
+      target += Ag[sire_ID[j]] + Eg[j];
+      for (k in ((group[j]-1)*group_size+1):(j-1)){
+      	infect1 = infect1+exp(Af[sire_ID[k]] + Ef[k]);
+      	infect2 = infect2+((infection_time[j]-infection_time[k])*exp(Af[sire_ID[k]] + Ef[k]));
+      } 
+      target += log(infect1)-(exp(Ag[sire_ID[j]] + Eg[j])*infect2);
     }
   }
-}
-
-
+}      
