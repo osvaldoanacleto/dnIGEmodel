@@ -1,5 +1,0 @@
-useDynLib(dnIGEmodel, .registration=TRUE)
-exportPattern("^[[:alpha:]]+")
-export(generate_epidemics)
-export(generate_population)
-import(MASS)
